@@ -64,7 +64,7 @@
     }
   },
   {
-    "longUserameSignup": 
+    "longUsernameSignup": 
     {
       "userName": "longusernameistoolongtest",
       "email": "1@1",
@@ -88,7 +88,7 @@
     }
   },
   {
-    "successlLogin": 
+    "successLogin": 
     {
       "userName": "3",
       "email": "3@3",
