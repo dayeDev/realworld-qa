@@ -10,10 +10,11 @@ from selenium.webdriver.common.action_chains import ActionChains
 
 # 페이지 객체 임포트
 from pages.settings_page import SettingsPage
+from pages.article_page import ArticlePage
 from pages.signup_page import SignupPage
 from pages.login_page import LoginPage
 from pages.home_page import HomePage
-from pages.article_page import ArticlePage
+from pages.base_page import BasePage
 
 # 로케이터 임포트
 from locators.settings_locators import SettingsPageLocators as SettingsLoc
@@ -53,15 +54,15 @@ def goToSettings(driver, testData):
 class TestSettings:
     # 세팅 관련 테스트 클래스
 
-    @pytest.mark.data_required
+    @pytest.mark.data_not_required
     def testAccessSettingsPage(self, driver):
         # SET-AUTO-001: 설정 페이지 진입 확인하는 테스트
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["fullDataUser"]
+            testData = loadTestData()["successlLogin"]
             
             # 세팅 페이지로 이동
-            goToSettings()
+            goToSettings(driver, testData)
 
             # 설정 페이지 접근 확인
             settingsPage = SettingsPage(driver)
@@ -69,7 +70,7 @@ class TestSettings:
             assert settingsPage.isSettingsPageLoaded(), "설정 페이지가 제대로 로드되지 않았습니다."
             
             # 설정 페이지 요소 확인
-            assert settingsPage.is_element_visible(SettingsLoc.UPDATE_BUTTON), "설정 페이지의 업데이트 버튼이 표시되지 않습니다."
+            assert settingsPage.is_element_visible(SettingsLoc.SETTINGS_UPDATE_BUTTON), "설정 페이지의 업데이트 버튼이 표시되지 않습니다."
             
             logger.info(f"✅ {inspect.currentframe().f_code.co_name} 테스트 성공")
         except Exception as e:
@@ -77,33 +78,37 @@ class TestSettings:
             pytest.fail(f"설정 페이지 접근 테스트 실패: {str(e)}")
             raise
     
-    @pytest.mark.data_required
-    def testSettingsPageLayout(self):
+    @pytest.mark.data_not_required
+    def testSettingsPageLayout(self, driver):
         # SET-AUTO-002: 설정 페이지의 전체적인 레이아웃을 확인하는 테스트
         try:
-            # 페이지 로드 확인
-            assert self.settingsPage.isSettingsPageLoaded(), "설정 페이지가 로드되지 않았습니다."
+            # 테스트 데이터 로드
+            testData = loadTestData()["successlLogin"]
             
+            # 세팅 페이지로 이동
+            goToSettings(driver, testData)
+
             # 페이지 제목 확인
-            page_title = self.driver.find_element(By.XPATH, Loc.PAGE_TITLE).text
+            page_title = driver.find_element(*SettingsLoc.SETTINGS_TITLE).text
             assert page_title == "Your Settings", f"페이지 제목이 일치하지 않습니다. 실제: {page_title}"
             
             # 입력 필드 순서 확인
             form_elements = [
-                Loc.IMAGE_URL_INPUT,
-                Loc.USERNAME_INPUT,
-                Loc.BIO_INPUT,
-                Loc.EMAIL_INPUT,
-                Loc.PASSWORD_INPUT
+                SettingsLoc.SETTINGS_PROFILE_PICTURE_INPUT,
+                SettingsLoc.SETTINGS_USERNAME_INPUT,
+                SettingsLoc.SETTINGS_BIO_TEXTAREA,
+                SettingsLoc.SETTINGS_EMAIL_INPUT,
+                SettingsLoc.SETTINGS_PASSWORD_INPUT
             ]
             
             # 각 요소가 존재하는지 확인
+            settingsPage = SettingsPage(driver)
             for element_locator in form_elements:
-                assert self.settingsPage.is_element_present(element_locator), f"요소가 존재하지 않습니다: {element_locator}"
+                assert settingsPage.is_element_present(element_locator), f"요소가 존재하지 않습니다: {element_locator}"
             
             # 버튼 확인
-            assert self.settingsPage.is_element_present(Loc.UPDATE_BUTTON), "Update Settings 버튼이 존재하지 않습니다."
-            assert self.settingsPage.is_element_present(Loc.LOGOUTBUTTON), "Logout 버튼이 존재하지 않습니다."
+            assert settingsPage.is_element_present(SettingsLoc.SETTINGS_UPDATE_BUTTON), "Update Settings 버튼이 존재하지 않습니다."
+            assert settingsPage.is_element_present(SettingsLoc.SETTINGS_LOGOUT_BUTTON), "Logout 버튼이 존재하지 않습니다."
             
             logger.info(f"✅ {inspect.currentframe().f_code.co_name} 설정 페이지 레이아웃 테스트 성공")
         except Exception as e:
@@ -111,38 +116,29 @@ class TestSettings:
             raise
     
     @pytest.mark.data_not_required
-    def test_settings_page_placeholders(self):
-        """
-        설정 페이지의 입력 필드 플레이스홀더를 확인하는 테스트
-        
-        사전 조건:
-        - 로그인된 사용자 (currentUser)가 설정 페이지 (/settings)에 접근.
-        
-        재현 절차:
-        1. 각 입력 필드의 플레이스홀더 텍스트를 확인한다.
-        
-        기대 결과:
-        - 'URL of profile picture' 필드에 적절한 플레이스홀더가 표시된다.
-        - 'Username' 필드에 적절한 플레이스홀더가 표시된다.
-        - 'Short bio about you' 텍스트 영역에 적절한 플레이스홀더가 표시된다.
-        - 'Email' 필드에 적절한 플레이스홀더가 표시된다.
-        - 'New Password' 필드에 적절한 플레이스홀더가 표시된다.
-        """
+    def testSettingsPagePlaceholders(self, driver):
+        # SET-AUTO-003: 설정 페이지의 입력 필드 플레이스홀더를 확인하는 테스트
         try:
-            # 각 입력 필드의 플레이스홀더 확인
-            imageUrlPlaceholder = self.driver.find_element(By.XPATH, Loc.IMAGE_URL_INPUT).get_attribute("placeholder")
-            assert "URL of profile picture" in imageUrlPlaceholder, f"이미지 URL 플레이스홀더가 일치하지 않습니다. 실제: {imageUrl_placeholder}"
+            # 테스트 데이터 로드
+            testData = loadTestData()["successlLogin"]
             
-            usernamePlaceholder = self.driver.find_element(By.XPATH, Loc.USERNAME_INPUT).get_attribute("placeholder")
+            # 세팅 페이지로 이동
+            goToSettings(driver, testData)
+
+            # 각 입력 필드의 플레이스홀더 확인
+            imageUrlPlaceholder = driver.find_element(*SettingsLoc.SETTINGS_PROFILE_PICTURE_INPUT).get_attribute("placeholder")
+            assert "URL of profile picture" in imageUrlPlaceholder, f"이미지 URL 플레이스홀더가 일치하지 않습니다. 실제: {imageUrlPlaceholder}"
+            
+            usernamePlaceholder = driver.find_element(*SettingsLoc.SETTINGS_USERNAME_INPUT).get_attribute("placeholder")
             assert "Username" in usernamePlaceholder, f"사용자 이름 플레이스홀더가 일치하지 않습니다. 실제: {usernamePlaceholder}"
             
-            bioPlaceholder = self.driver.find_element(By.XPATH, Loc.BIO_INPUT).get_attribute("placeholder")
+            bioPlaceholder = driver.find_element(*SettingsLoc.SETTINGS_BIO_TEXTAREA).get_attribute("placeholder")
             assert "Short bio about you" in bioPlaceholder, f"상태 소개 플레이스홀더가 일치하지 않습니다. 실제: {bioPlaceholder}"
             
-            emailPlaceholder = self.driver.find_element(By.XPATH, Loc.EMAIL_INPUT).get_attribute("placeholder")
+            emailPlaceholder = driver.find_element(*SettingsLoc.SETTINGS_EMAIL_INPUT).get_attribute("placeholder")
             assert "Email" in emailPlaceholder, f"이메일 플레이스홀더가 일치하지 않습니다. 실제: {emailPlaceholder}"
             
-            passwordPlaceholder = self.driver.find_element(By.XPATH, Loc.PASSWORD_INPUT).get_attribute("placeholder")
+            passwordPlaceholder = driver.find_element(*SettingsLoc.SETTINGS_PASSWORD_INPUT).get_attribute("placeholder")
             assert "New Password" in passwordPlaceholder, f"비밀번호 플레이스홀더가 일치하지 않습니다. 실제: {passwordPlaceholder}"
             
             logger.info(f"✅ {inspect.currentframe().f_code.co_name} 설정 페이지 플레이스홀더 테스트 성공")
@@ -151,28 +147,26 @@ class TestSettings:
             raise
     
     @pytest.mark.data_not_required
-    def test_logout_functionality(self):
-        """
-        로그아웃 기능을 확인하는 테스트
-        
-        사전 조건:
-        - 로그인된 사용자 (currentUser)가 설정 페이지 (/settings)에 접근.
-        
-        재현 절차:
-        1. 'Or click here to logout.' 버튼을 클릭한다.
-        
-        기대 결과:
-        - 사용자는 로그아웃 처리되어 홈페이지로 리다이렉션된다.
-        """
+    def testLogoutFunctionality(self, driver):
+        # SET-AUTO-004: 로그아웃 기능을 확인하는 테스트
         try:
+            # 테스트 데이터 로드
+            testData = loadTestData()["successlLogin"]
+            
+            # 세팅 페이지로 이동
+            goToSettings(driver, testData)
+
             # 로그아웃 버튼 클릭
-            self.driver.find_element(By.XPATH, Loc.LOGOUTBUTTON).click()
+            driver.find_element(*SettingsLoc.SETTINGS_LOGOUT_BUTTON).click()
             
             # 홈페이지로 리다이렉션 확인
-            self.driver.wait_for_url_contains("home")
-            
+            homePage = HomePage(driver)
+            homePage.isPageLoaded()
+
             # 로그아웃 상태 확인 (로그인 버튼이 표시되는지)
-            assert self.login_page.is_element_visible(By.XPATH, "//a[contains(text(), 'Sign in')]"), "로그아웃 후 로그인 버튼이 표시되지 않습니다."
+            basePage = BasePage(driver)
+            homePage = HomePage(driver)
+            assert basePage.is_element_visible(*HomeLoc.HOME_NAV_LOGIN), "로그아웃 후 로그인 버튼이 표시되지 않습니다."
             
             logger.info(f"✅ {inspect.currentframe().f_code.co_name} 로그아웃 기능 테스트 성공")
         except Exception as e:
@@ -180,24 +174,15 @@ class TestSettings:
             raise
     
     @pytest.mark.data_required
-    def test_remove_profileImage(self):
-        """
-        프로필 이미지 URL 제거 기능을 확인하는 테스트
-        
-        사전 조건:
-        - 로그인된 사용자 (currentUser)가 설정 페이지(/settings)에 접근.
-        - currentUser에게 기존 프로필 이미지 URL이 설정되어 있음.
-        
-        재현 절차:
-        1. 'URL of profile picture' 입력 필드의 기존 이미지 URL을 모두 삭제한다.
-        2. 'Update Settings' 버튼을 클릭한다.
-        3. 홈페이지로 리다이렉션 된다.
-        4. 네비게이션 바의 프로필 이미지를 확인한다.
-        
-        기대 결과:
-        - 프로필 이미지가 기본 이미지 아이콘으로 표시된다.
-        """
+    def testRemoveProfileImage(self, driver):
+        # SET-AUTO-005: 프로필 이미지 URL 제거 기능을 확인하는 테스트
         try:
+            # 테스트 데이터 로드
+            testData = loadTestData()["successlLogin"]
+            
+            # 세팅 페이지로 이동
+            goToSettings(driver, testData)
+
             # 기존 이미지 URL 삭제
             self.settingsPage.clearField(Loc.IMAGE_URL_INPUT)
             
@@ -205,10 +190,10 @@ class TestSettings:
             self.settingsPage.clickUpdateButton()
             
             # 홈페이지로 리다이렉션 확인
-            self.driver.wait_for_url_contains("home")
+            driver.wait_for_url_contains("home")
             
             # 네비게이션 바의 프로필 이미지 확인
-            profile_img = self.driver.find_element(By.XPATH, "//img[@class='user-pic']")
+            profile_img = driver.find_element(*"//img[@class='user-pic']")
             img_src = profile_img.get_attribute("src")
             
             # 기본 이미지 확인 (기본 이미지는 일반적으로 상대 경로이거나 특정 패턴을 가짐)
@@ -220,7 +205,7 @@ class TestSettings:
             raise
     
     @pytest.mark.data_required
-    def test_update_profileImage(self):
+    def test_update_profileImage(self, driver):
         """
         프로필 이미지 URL 업데이트 기능을 확인하는 테스트
         
@@ -245,10 +230,10 @@ class TestSettings:
             self.settingsPage.clickUpdateButton()
             
             # 홈페이지로 리다이렉션 확인
-            self.driver.wait_for_url_contains("home")
+            driver.wait_for_url_contains("home")
             
             # 네비게이션 바의 프로필 이미지 확인
-            profile_img = self.driver.find_element(By.XPATH, "//img[@class='user-pic']")
+            profile_img = driver.find_element(*"//img[@class='user-pic']")
             img_src = profile_img.get_attribute("src")
             
             # 새로운 이미지 URL로 변경되었는지 확인
@@ -849,7 +834,7 @@ class TestSettingsPage:
     @pytest.fixture(autouse=True)
     def setup(self, driver):
         """각 테스트 전에 로그인 상태로 설정 페이지에 접근하는 사전 조건 설정"""
-        self.driver = driver
+        driver = driver
         self.testData = loadTestData()
         self.loginPage = LoginPage(driver)
         self.settingsPage = SettingsPage(driver)
@@ -863,11 +848,11 @@ class TestSettingsPage:
         )
         
         # 설정 페이지로 이동
-        self.driver.get(f"{self.driver.current_url}settings")
+        driver.get(f"{driver.current_url}settings")
         assert self.settingsPage.isSettingsPageLoaded(), "설정 페이지가 로드되지 않았습니다."
         
     @pytest.mark.data_required
-    def test_update_email_with_existing_email(self):
+    def test_update_email_with_existing_email(self, driver):
         """
         이미 존재하는 이메일로 업데이트 시도 시 오류 메시지 확인 테스트
         
@@ -892,7 +877,7 @@ class TestSettingsPage:
             self.settingsPage.clickUpdateButton()
             
             # 오류 메시지 확인
-            errorMessage = self.driver.find_element(*Loc.ERROR_MESSAGE).text
+            errorMessage = driver.find_element(*Loc.ERROR_MESSAGE).text
             assert "Email has already been taken" in errorMessage or "이미 사용 중인 이메일" in error_message, \
                 f"예상된 오류 메시지가 표시되지 않았습니다. 실제 메시지: {error_message}"
             
@@ -902,7 +887,7 @@ class TestSettingsPage:
             raise
     
     @pytest.mark.data_not_required
-    def test_update_email_with_new_valid_email(self):
+    def test_update_email_with_new_valid_email(self, driver):
         """
         새로운 유효한 이메일로 업데이트 성공 테스트
         
@@ -926,14 +911,14 @@ class TestSettingsPage:
             self.settingsPage.clickUpdateButton()
             
             # 홈페이지로 리다이렉션 확인
-            self.driver.wait_for_url_contains("home")
-            currentUrl = self.driver.current_url
+            driver.wait_for_url_contains("home")
+            currentUrl = driver.current_url
             assert "/home" in currentUrl or currentUrl.endswith('/'), \
                 f"홈페이지로 리다이렉션되지 않았습니다. 현재 URL: {currentUrl}"
             
             # 이메일 변경 확인 (설정 페이지 다시 접속하여 확인)
-            self.driver.get(f"{self.driver.current_url.split('#')[0]}settings")
-            email_field_value = self.driver.find_element(*Loc.EMAIL_INPUT).get_attribute("value")
+            driver.get(f"{driver.current_url.split('#')[0]}settings")
+            email_field_value = driver.find_element(*Loc.EMAIL_INPUT).get_attribute("value")
             assert email_field_value == new_email, \
                 f"이메일이 성공적으로 변경되지 않았습니다. 현재 이메일: {email_field_value}"
             
@@ -943,7 +928,7 @@ class TestSettingsPage:
             raise
     
     @pytest.mark.data_required
-    def test_update_password_with_new_valid_password(self):
+    def test_update_password_with_new_valid_password(self, driver):
         """
         새로운 유효한 비밀번호로 업데이트 성공 테스트
         
@@ -967,14 +952,14 @@ class TestSettingsPage:
             self.settingsPage.clickUpdateButton()
             
             # 홈페이지로 리다이렉션 확인
-            self.driver.wait_for_url_contains("home")
-            currentUrl = self.driver.current_url
+            driver.wait_for_url_contains("home")
+            currentUrl = driver.current_url
             assert "/home" in currentUrl or currentUrl.endswith('/'), \
                 f"홈페이지로 리다이렉션되지 않았습니다. 현재 URL: {currentUrl}"
             
             # 비밀번호 변경 확인 (로그아웃 후 새 비밀번호로 로그인)
             # 로그아웃 처리
-            logout_link = self.driver.find_element(*Loc.LOGOUTBUTTON)
+            logout_link = driver.find_element(*Loc.LOGOUTBUTTON)
             logout_link.click()
             
             # 새 비밀번호로 로그인
@@ -993,7 +978,7 @@ class TestSettingsPage:
             raise
     
     @pytest.mark.data_not_required
-    def test_update_with_empty_password(self):
+    def test_update_with_empty_password(self, driver):
         """
         빈 비밀번호로 업데이트 시도 테스트
         
@@ -1015,14 +1000,14 @@ class TestSettingsPage:
             self.settingsPage.clickUpdateButton()
             
             # 홈페이지로 리다이렉션 확인
-            self.driver.wait_for_url_contains("home")
-            currentUrl = self.driver.current_url
+            driver.wait_for_url_contains("home")
+            currentUrl = driver.current_url
             assert "/home" in currentUrl or currentUrl.endswith('/'), \
                 f"홈페이지로 리다이렉션되지 않았습니다. 현재 URL: {currentUrl}"
             
             # 비밀번호가 변경되지 않았는지 확인 (원래 비밀번호로 로그인 가능한지 확인)
             # 로그아웃 처리
-            logout_link = self.driver.find_element(*Loc.LOGOUTBUTTON)
+            logout_link = driver.find_element(*Loc.LOGOUTBUTTON)
             logout_link.click()
             
             # 원래 비밀번호로 로그인
@@ -1041,7 +1026,7 @@ class TestSettingsPage:
             raise
     
     @pytest.mark.data_not_required
-    def test_update_password_with_leading_space(self):
+    def test_update_password_with_leading_space(self, driver):
         """
         앞에 공백이 있는 비밀번호로 업데이트 시도 테스트
         
@@ -1065,7 +1050,7 @@ class TestSettingsPage:
             self.settingsPage.clickUpdateButton()
             
             # 오류 메시지 확인
-            errorMessage = self.driver.find_element(*Loc.ERROR_MESSAGE).text
+            errorMessage = driver.find_element(*Loc.ERROR_MESSAGE).text
             expected_errorMessages = [
                 "비밀번호는 앞/뒤 공백을 포함할 수 없습니다",
                 "Password cannot include leading or trailing whitespace",
