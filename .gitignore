@@ -1,7 +1,5 @@
 .env
 credentials.json
-/backend
-/frontend
 /venv
 /html_crawler/__pycache__
 /google_sheets/__pycache__
@@ -12,3 +10,5 @@ html_crawler/user_data.py
 /prompts/tests/__pycache__
 /logs/claude_responses
 /prompts/pages/__pycache__
+/qa-realworld-automation/reports
+/qa-realworld-automation/logs
