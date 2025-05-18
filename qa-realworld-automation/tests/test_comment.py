@@ -19,11 +19,20 @@ from config import config
 
 logger = setup_logger(__name__)
 
-def loadTestData():
+def loadTestData(key):
     # 테스트 데이터 로드 함수
     dataFilePath = os.path.join(config.TEST_DATA_DIR, "test_data.json")
-    with open(dataFilePath, 'r', encoding='utf-8') as file:
-        return json.load(file)
+    with open(dataFilePath, encoding="utf-8") as f:
+        data = json.load(f)
+
+        # data는 리스트이고, 각 요소는 딕셔너리임 → 반복하며 key를 가진 딕셔너리를 찾는다
+        for item in data:
+            if key in item:
+                return item[key]
+
+        raise KeyError(f"'{key}' not found in test_data.json")
+
+    raise KeyError(f"'{key}' not found in test_data.json")
 
 def goToGlobalFeed(driver, testData):
     # 각 테스트 전에 로그인 상태로 설정하는 함수
@@ -50,7 +59,7 @@ class TestComment:
         # COM-AUTO-001: 테스트 시나리오: 게시글에 댓글 추가 기능 확인
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["belowTenArticlesUser"]
+            testData = loadTestData("belowTenArticlesUser")
             
             # 글로벌 피드로 이동
             goToGlobalFeed(driver, testData)
@@ -100,8 +109,8 @@ class TestComment:
         # COM-AUTO-002: 긴 영문 댓글 추가 시 레이아웃 확인
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["belowTenArticlesUser"]
-            testComment = loadTestData()["longEnComment"]
+            testData = loadTestData("belowTenArticlesUser")
+            testComment = loadTestData("longEnComment")
             
             # 글로벌 피드로 이동
             goToGlobalFeed(driver, testData)
@@ -132,8 +141,8 @@ class TestComment:
         # COM-AUTO-003: 긴 특수문자 댓글 추가 시 레이아웃 확인
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["belowTenArticlesUser"]
-            testComment = loadTestData()["longSpecialCharComment"]
+            testData = loadTestData("belowTenArticlesUser")
+            testComment = loadTestData("longSpecialCharComment")
             
             # 글로벌 피드로 이동
             goToGlobalFeed(driver, testData)
@@ -164,8 +173,8 @@ class TestComment:
         # COM-AUTO-004: 긴 댓글(120자 이상 숫자)이 정상적으로 표시되는지 테스트합니다.
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["belowTenArticlesUser"]
-            testComment = loadTestData()["longNumComment"]
+            testData = loadTestData("belowTenArticlesUser")
+            testComment = loadTestData("longNumComment")
             
             # 글로벌 피드로 이동
             goToGlobalFeed(driver, testData)
@@ -196,8 +205,8 @@ class TestComment:
         # COM-AUTO-005: 여러 줄 댓글이 정상적으로 표시되는지 테스트합니다.
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["belowTenArticlesUser"]
-            testComment = loadTestData()["newLineComment"]
+            testData = loadTestData("belowTenArticlesUser")
+            testComment = loadTestData("newLineComment")
             
             # 글로벌 피드로 이동
             goToGlobalFeed(driver, testData)
@@ -226,8 +235,8 @@ class TestComment:
         # COM-AUTO-006: 댓글 삭제 기능을 테스트합니다.
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["belowTenArticlesUser"]
-            testComment = loadTestData()["deleteComment"]
+            testData = loadTestData("belowTenArticlesUser")
+            testComment = loadTestData("deleteComment")
             
             # 글로벌 피드로 이동
             goToGlobalFeed(driver, testData)
@@ -275,7 +284,7 @@ class TestComment:
         # COM-AUTO-007: 빈 댓글 제출 시 동작을 테스트합니다.
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["belowTenArticlesUser"]
+            testData = loadTestData("belowTenArticlesUser")
             
             # 글로벌 피드로 이동
             goToGlobalFeed(driver, testData)
@@ -302,7 +311,7 @@ class TestComment:
             logger.warning(f"❗ {inspect.currentframe().f_code.co_name} : {e}")
             raise
     
-    comment_list = loadTestData()["addComment"]
+    comment_list = loadTestData("addComment")
 
     @pytest.mark.parametrize("comment", comment_list)
     @pytest.mark.data_required
@@ -310,7 +319,7 @@ class TestComment:
         # COM-AUTO-008: 새 댓글 추가 시 기존 댓글이 유지되는지 테스트합니다.
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["belowTenArticlesUser"]
+            testData = loadTestData("belowTenArticlesUser")
 
             # 글로벌 피드로 이동
             goToGlobalFeed(driver, testData)
@@ -355,7 +364,7 @@ class TestComment:
         # COM-AUTO-009: 비로그인 상태에서 게시글 상세 페이지의 댓글 섹션 확인 테스트
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["belowTenArticlesUser"]
+            testData = loadTestData("belowTenArticlesUser")
 
             # 글로벌 피드로 이동
             goToGlobalFeed(driver, testData)

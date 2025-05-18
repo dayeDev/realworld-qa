@@ -30,11 +30,20 @@ from locators.article_locators import ArticlePageLocators as ArticleLoc
 from utils.logger import setup_logger
 from config import config
 
-def loadTestData():
+def loadTestData(key):
     # 테스트 데이터 로드 함수
     dataFilePath = os.path.join(config.TEST_DATA_DIR, "test_data.json")
-    with open(dataFilePath, 'r', encoding='utf-8') as file:
-        return json.load(file)
+    with open(dataFilePath, encoding="utf-8") as f:
+        data = json.load(f)
+
+        # data는 리스트이고, 각 요소는 딕셔너리임 → 반복하며 key를 가진 딕셔너리를 찾는다
+        for item in data:
+            if key in item:
+                return item[key]
+
+        raise KeyError(f"'{key}' not found in test_data.json")
+
+    raise KeyError(f"'{key}' not found in test_data.json")
 
 logger = setup_logger(__name__)
 
@@ -46,7 +55,7 @@ class TestSocial:
         # SOC-AUTO-001: 로그인 상태에서 게시글 좋아요(Favorite) 기능 테스트
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["belowTenArticlesUser"]
+            testData = loadTestData("belowTenArticlesUser")
             
             # 로그인
             loginPage = LoginPage(driver)
@@ -86,7 +95,7 @@ class TestSocial:
         # SOC-AUTO-002: 좋아요한 게시글이 프로필의 Favorited Articles 탭에 표시되는지 테스트
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["belowTenArticlesUser2"]
+            testData = loadTestData("belowTenArticlesUser2")
             
             # 로그인
             loginPage = LoginPage(driver)
@@ -147,7 +156,7 @@ class TestSocial:
         # SOC-AUTO-003: 좋아요 취소한 게시글이 프로필의 Favorited Articles 탭에서 사라지는지 테스트
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["belowTenArticlesUser"]
+            testData = loadTestData("belowTenArticlesUser")
             
             # 로그인
             loginPage = LoginPage(driver)
@@ -198,7 +207,7 @@ class TestSocial:
         # SOC-AUTO-004: 작성자 팔로우 기능 테스트
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["belowTenArticlesUser"]
+            testData = loadTestData("belowTenArticlesUser")
             
             # 로그인
             loginPage = LoginPage(driver)
@@ -248,7 +257,7 @@ class TestSocial:
         # SOC-AUTO-005: 팔로우한 작성자의 게시글이 Your Feed에 표시되는지 확인하는 테스트
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["belowTenArticlesUser2"]
+            testData = loadTestData("belowTenArticlesUser2")
             
             # 홈페이지 접속 및 로그인 상태 확인
             homePage = HomePage(driver)
@@ -305,7 +314,7 @@ class TestSocial:
         # SOC-AUTO-006: 팔로우/언팔로우 버튼 상태 변경 테스트
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["belowTenArticlesUser"]
+            testData = loadTestData("belowTenArticlesUser")
             
             # 홈페이지 접속 및 로그인 상태 확인
             homePage = HomePage(driver)
@@ -352,7 +361,7 @@ class TestSocial:
         # SOC-AUTO-007: 언팔로우한 작성자의 게시글이 Your Feed에서 사라지는지 확인하는 테스트
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["belowTenArticlesUser2"]
+            testData = loadTestData("belowTenArticlesUser2")
             
             # 1. 홈페이지 접속 및 로그인 상태 확인
             homePage = HomePage(driver)

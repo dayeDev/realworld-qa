@@ -32,11 +32,20 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 logger = setup_logger(__name__)
 
-def loadTestData():
+def loadTestData(key):
     # 테스트 데이터 로드 함수
     dataFilePath = os.path.join(config.TEST_DATA_DIR, "test_data.json")
-    with open(dataFilePath, 'r', encoding='utf-8') as file:
-        return json.load(file)
+    with open(dataFilePath, encoding="utf-8") as f:
+        data = json.load(f)
+
+        # data는 리스트이고, 각 요소는 딕셔너리임 → 반복하며 key를 가진 딕셔너리를 찾는다
+        for item in data:
+            if key in item:
+                return item[key]
+
+        raise KeyError(f"'{key}' not found in test_data.json")
+
+    raise KeyError(f"'{key}' not found in test_data.json")
 
 class TestAuth:
     # 인증 시나리오 테스트 클래스
@@ -153,7 +162,7 @@ class TestAuth:
         # AUTH-AUTO-005: 잘못된 이메일 형식 회원가입 테스트
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["invalidEmailSignup"]
+            testData = loadTestData("invalidEmailSignup")
             
             # 회원가입 페이지 접속 및 회원가입 시도
             signupPage = SignupPage(driver)
@@ -237,7 +246,7 @@ class TestAuth:
         # AUTH-AUTO-008: 짧은 비밀번호로 회원가입 시도 시 에러 메시지 표시 테스트
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["shortPwSignup"]
+            testData = loadTestData("shortPwSignup")
             
             # 회원가입 페이지 접속
             signupPage = SignupPage(driver)
@@ -267,13 +276,6 @@ class TestAuth:
             pytest.fail(f"짧은 비밀번호 회원가입 테스트 실패: {str(e)}")
             raise
     
-    from utils.test_helper import get_test_data
-from pages.signup_page import SignupPage
-from pages.home_page import HomePage
-import pytest
-import inspect
-
-class TestAuth:
     @pytest.mark.data_not_required
     def test_xss_in_username_signup(self, driver):
         # AUTH-AUTO-009: XSS 공격 문자열을 사용자명으로 회원가입 시 보안 처리 테스트

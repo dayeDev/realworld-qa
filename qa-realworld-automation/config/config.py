@@ -1,6 +1,8 @@
 import os
-import platform
 from pathlib import Path
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 
 # 기본 URL 설정 - 테스트 환경에 따라 변경 가능
 BASE_URL = "http://localhost:4100"
@@ -22,28 +24,22 @@ TAKE_SCREENSHOT_ON_FAILURE = True  # 실패 시 스크린샷 촬영 여부
 LOG_LEVEL = "INFO"  # 로그 레벨 (DEBUG, INFO, WARNING, ERROR, CRITICAL)
 LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "logs")
 
-# 운영체제별 WebDriver 경로 설정
-def getDriverPath():
-    """
-    운영체제에 따라 적절한 WebDriver 경로를 반환합니다.
-    """
-    rootDir = Path(__file__).parent.parent
-    driversDir = rootDir / "drivers"
-    systemName = platform.system()
+# ✅ WebDriver 자동 설치 및 생성 함수
+def get_driver(headless=False, timeout=TIMEOUT):
+    options = Options()
+    if headless:
+        options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--window-size=1920,1080")
 
-    if systemName == "Windows":
-        driverPath = driversDir / "chromedriver.exe"
-    elif systemName == "Darwin":
-        driverPath = driversDir / "chromedriver"
-    elif systemName == "Linux":
-        driverPath = driversDir / "chromedriver"
-    else:
-        raise Exception(f"지원하지 않는 운영체제입니다: {systemName}")
-
-    if not driverPath.exists():
-        raise FileNotFoundError(f"WebDriver를 찾을 수 없습니다: {driverPath}")
-    
-    return str(driverPath)
+    service = Service(ChromeDriverManager().install())
+    from selenium import webdriver
+    driver = webdriver.Chrome(service=service, options=options)
+    driver.implicitly_wait(timeout)
+    driver.maximize_window()
+    return driver
 
 # 테스트 환경 설정
 class TestEnvironment:
@@ -96,7 +92,7 @@ __all__ = [
     "TAKE_SCREENSHOT_ON_FAILURE",
     "LOG_LEVEL",
     "LOG_DIR",
-    "getDriverPath",
+    "get_driver",  # ✅ 변경된 함수 이름 반영
     "TestEnvironment",
     "TEST_DATA_DIR"
 ]
