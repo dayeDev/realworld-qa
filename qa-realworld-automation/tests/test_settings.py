@@ -205,7 +205,7 @@ class TestSettings:
             # 홈페이지로 리다이렉션 확인
             homePage = HomePage(driver)
             homePage.isPageLoaded()
-            
+
             # 네비게이션 바의 프로필 이미지 확인
             profile_img = driver.find_element(*SettingsLoc.SETTINGS_USER_PIC)
             img_src = profile_img.get_attribute("src")
@@ -259,7 +259,7 @@ class TestSettings:
             # 테스트 데이터 로드
             testData = loadTestData("successLogin")
             
-            # 설정정 페이지로 이동
+            # 설정 페이지로 이동
             goToSettings(driver, testData)
             
             # 새로운 이미지 URL 입력
@@ -280,7 +280,7 @@ class TestSettings:
 
             # 새로운 이미지 URL로 변경되었는지 확인
             assert "https://api.realworld.io/images/smiley-cyrus.jpeg" in img_src, f"프로필 이미지가 기본 프로필로 변경되지 않았습니다. 실제: {img_src}"
-            
+
             logger.info(f"✅ {inspect.currentframe().f_code.co_name} 테스트 성공")
         except Exception as e:
             logger.error(f"❌ {inspect.currentframe().f_code.co_name} 테스트 실패: {str(e)}")
@@ -302,7 +302,7 @@ class TestSettings:
             
             # Username 입력 필드의 기존 닉네임 삭제
             settingsPage.clearField(SettingsLoc.SETTINGS_USERNAME_INPUT)
-            
+
             # Update Settings 버튼 클릭
             settingsPage.clickUpdateButton()
             
@@ -311,6 +311,7 @@ class TestSettings:
             
             # 홈페이지로 이동하여 사용자명이 변경되지 않았는지 확인
             homePage = HomePage(driver)
+            settingsPage.clickLogoButton()
             settingsPage.clickLogoButton()
             
             # 네비게이션 바에서 사용자명 확인
@@ -353,7 +354,7 @@ class TestSettings:
             logger.error(f"❌ {inspect.currentframe().f_code.co_name} 테스트 실패: {str(e)}")
             raise
     
-    @pytest.mark.data_required
+    @pytest.mark.data_not_required
     def test_valid_username_update(self, driver):
         # SET-AUTO-010: 유효한 새 닉네임으로 업데이트 테스트
         try:
@@ -376,13 +377,14 @@ class TestSettings:
             # 네비게이션 바에서 변경된 닉네임 확인
             current_username = homePage.getNavigateUserName()
             assert current_username == new_username, f"사용자명이 변경되지 않았습니다. 예상: {new_username}, 실제: {current_username}"
+            assert current_username == new_username, f"사용자명이 변경되지 않았습니다. 예상: {new_username}, 실제: {current_username}"
             
             logger.info(f"✅ {inspect.currentframe().f_code.co_name} 테스트 성공")
         except Exception as e:
             logger.error(f"❌ {inspect.currentframe().f_code.co_name} 테스트 실패: {str(e)}")
             raise
     
-    @pytest.mark.data_required
+    @pytest.mark.data_not_required
     def test_bio_update(self, driver):
         # SET-AUTO-011: 상태소개(bio) 업데이트 테스트
         try:
@@ -627,8 +629,11 @@ class TestSettings:
             new_email = self.testData["newValidEmail"]
             settingsPage.clearField(SettingsLoc.EMAIL_INPUT)
             settingsPage.enterEmail(new_email)
+            settingsPage.clearField(SettingsLoc.EMAIL_INPUT)
+            settingsPage.enterEmail(new_email)
             
             # 2. Update Settings 버튼 클릭
+            settingsPage.clickUpdateButton()
             settingsPage.clickUpdateButton()
             
             # 홈페이지로 리다이렉션 확인
@@ -668,8 +673,11 @@ class TestSettings:
             new_password = self.testData["newValidPassword"]
             settingsPage.clearField(SettingsLoc.PASSWORD_INPUT)
             settingsPage.enterPassword(new_password)
+            settingsPage.clearField(SettingsLoc.PASSWORD_INPUT)
+            settingsPage.enterPassword(new_password)
             
             # 2. Update Settings 버튼 클릭
+            settingsPage.clickUpdateButton()
             settingsPage.clickUpdateButton()
             
             # 홈페이지로 리다이렉션 확인
@@ -716,8 +724,10 @@ class TestSettings:
         try:
             # 1. 비밀번호 필드를 비워둠 (이미 비어있을 수 있으므로 명시적으로 비움)
             settingsPage.clearField(SettingsLoc.PASSWORD_INPUT)
+            settingsPage.clearField(SettingsLoc.PASSWORD_INPUT)
             
             # 2. Update Settings 버튼 클릭
+            settingsPage.clickUpdateButton()
             settingsPage.clickUpdateButton()
             
             # 홈페이지로 리다이렉션 확인
@@ -766,8 +776,11 @@ class TestSettings:
             password_with_space = " testpassword"
             settingsPage.clearField(SettingsLoc.PASSWORD_INPUT)
             settingsPage.enterPassword(password_with_space)
+            settingsPage.clearField(SettingsLoc.PASSWORD_INPUT)
+            settingsPage.enterPassword(password_with_space)
             
             # 2. Update Settings 버튼 클릭
+            settingsPage.clickUpdateButton()
             settingsPage.clickUpdateButton()
             
             # 오류 메시지 확인
