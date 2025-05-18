@@ -72,7 +72,7 @@ class TestEnvironment:
         }
 
 # 테스트 데이터 설정
-TEST_DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "test_data")
+TEST_DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
 
 # 디렉토리 생성 함수
 def ensureDirectoryExists(dirPath):
