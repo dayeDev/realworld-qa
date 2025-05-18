@@ -2,6 +2,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from pages.base_page import BasePage
 from locators.settings_locators import SettingsPageLocators as Loc
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
+
 
 class SettingsPage(BasePage):
     def __init__(self, driver):
@@ -96,4 +98,15 @@ class SettingsPage(BasePage):
             return True
         except Exception as e:
             print(f"필드 내용 지우기 중 오류 발생: {str(e)}")
+            return False
+
+    def clickLogoButton(self):
+        try:
+            self._click(Loc.SETTINGS_NAVBAR_BRAND)
+            WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable(Loc.SETTINGS_NAVBAR_BRAND)
+            )
+            return True
+        except (TimeoutException, NoSuchElementException) as e:
+            self._log_error(f"Follow 버튼 클릭에 실패했습니다: {str(e)}")
             return False

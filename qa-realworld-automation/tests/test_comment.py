@@ -197,7 +197,7 @@ class TestComment:
         try:
             # 테스트 데이터 로드
             testData = loadTestData()["belowTenArticlesUser"]
-            testComment = loadTestData()["newLineComment"]
+            testComment = loadTestData()["newLinetext"]
             
             # 글로벌 피드로 이동
             goToGlobalFeed(driver, testData)

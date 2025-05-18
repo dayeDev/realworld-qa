@@ -120,7 +120,7 @@ class HomePage(BasePage):
             bool: 페이지가 완전히 로드되었는지 여부
         """
         try:
-            return (self._is_element_visible(Loc.HOME_FEED_TOGGLE) and 
-                    self._is_element_visible(Loc.HOME_ARTICLE_PREVIEW))
+            return (self.is_element_visible(Loc.HOME_FEED_TOGGLE) and 
+                    self.is_element_visible(Loc.HOME_ARTICLE_PREVIEW))
         except TimeoutException:
             return False
