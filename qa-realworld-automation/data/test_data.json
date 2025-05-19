@@ -140,7 +140,7 @@
     "longNumComment": "012301230123012301230123012301230123012301230123012301230123012301230123012301230123012301230123012301230123012301230123"
   },
   {
-    "newLineComment": "첫 줄\n둘째 줄"
+    "newLinetext": "첫 줄\n둘째 줄"
   },
   {
     "deleteComment": "삭제 대상"
@@ -151,7 +151,18 @@
       "신규 댓글1",
       "신규 댓글2"
     ]
+  },
+  {
+    "validUsernameUpdate": "validUsernameUpdate"
+  },
+  {
+    "shortNewBio": "새로운 상태 메시지입니다."
+  },
+  {
+    "noAtMarkEmail": "testuser.example.com"
+  },
+  {
+    "includeNotAllowedCharEmail": "testuser.example.com"
   }
-
 ]
   

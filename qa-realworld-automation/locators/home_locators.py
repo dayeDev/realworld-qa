@@ -17,6 +17,7 @@ class HomePageLocators:
     HOME_NAV_SETTINGS_LINK = (By.CSS_SELECTOR, "ul.nav.navbar-nav.pull-xs-right li.nav-item:nth-child(3) a.nav-link")
     HOME_NAV_USER_LINK = (By.CSS_SELECTOR, "ul.nav.navbar-nav.pull-xs-right li.nav-item:nth-child(4) a.nav-link")
     HOME_NAV_USER_PIC = (By.CSS_SELECTOR, "img.user-pic")
+    HOME_NAV_LOGIN = (By.CSS_SELECTOR, "a.nav-link[href='/login']")
 
     # ───── 피드 탭 영역 ─────
     TAB_YOUR_FEED = (By.CSS_SELECTOR, ".nav-link.active")
