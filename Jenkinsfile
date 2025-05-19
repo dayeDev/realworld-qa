@@ -11,18 +11,27 @@ pipeline {
   }
 
   stages {
-    stage('Install Dependencies') {
+    stage('연동 확인') {
       steps {
-        sh 'pip install -r qa-realworld-automation/requirements.txt'
-      }
-    }
-
-    stage('Run Tests') {
-      steps {
-        sh 'pytest qa-realworld-automation/tests --maxfail=1 --disable-warnings -v'
+        echo '✅ GitLab에서 Jenkins로 연동 확인됨'
       }
     }
   }
+
+  
+  // stages {
+  //   stage('Install Dependencies') {
+  //     steps {
+  //       sh 'pip install -r qa-realworld-automation/requirements.txt'
+  //     }
+  //   }
+
+  //   stage('Run Tests') {
+  //     steps {
+  //       sh 'pytest qa-realworld-automation/tests --maxfail=1 --disable-warnings -v'
+  //     }
+  //   }
+  // }
 
   post {
     always {
