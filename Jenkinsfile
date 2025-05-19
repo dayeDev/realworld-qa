@@ -16,9 +16,20 @@ pipeline {
         echo '✅ GitLab에서 Jenkins로 연동 확인됨'
       }
     }
-  }
 
-  
+    stage('HTML 리포트 발행') {
+      steps {
+        publishHTML([
+          reportDir: 'reports/html',
+          reportFiles: 'index.html',
+          reportName: '테스트 리포트',
+          keepAll: true
+        ])
+      }
+    }
+  }
+}
+
   // stages {
   //   stage('Install Dependencies') {
   //     steps {
