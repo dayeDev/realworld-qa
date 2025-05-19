@@ -16,8 +16,8 @@ def remove_python_tags(content: str) -> str:
     content = re.sub(r"\s*```$", "", content, flags=re.MULTILINE)
     return content.lstrip("\n")
 
-if __name__ == "__main__":
-    # 로케이터 자동 생성
+def run():
+        # 로케이터 자동 생성
     for locator in CRAWLING_LOCATORS:
         # HTML 파일 생성 및 저장
         capture_page(*locator)  # DB 연결시 사용 가능, 임시 주석처리함
@@ -45,5 +45,9 @@ if __name__ == "__main__":
     result = generate_with_claude(prompt, text_content)
     """
     save_data_overwrite(results, "json_data", "testcase.json")
+
+if __name__ == "__main__":
+    run()
+
 
     
