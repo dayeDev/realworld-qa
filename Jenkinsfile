@@ -19,15 +19,18 @@ pipeline {
 
     stage('HTML 리포트 발행') {
       steps {
-        publishHTML([
-          reportDir: 'reports/html',
-          reportFiles: 'index.html',
-          reportName: '테스트 리포트',
-          keepAll: true
+        publishHTML(target: [
+          reportDir:   'reports',          // ★ 리포트가 있는 폴더
+          reportFiles: 'report.html',      // ★ 파일 이름
+          reportName:  'Test Report',      // 파이프라인에서 보일 제목
+          keepAll:               true,     // 매 빌드마다 보존
+          allowMissing:          false,    // 보고서가 없으면 빌드 실패
+          alwaysLinkToLastBuild: true      // “Last successful build” 링크
         ])
       }
     }
   }
+
 
 
   // stages {
