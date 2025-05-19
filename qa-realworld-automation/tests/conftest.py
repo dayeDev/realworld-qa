@@ -1,20 +1,15 @@
 import sys
 import os
-import platform
 import pytest
 from datetime import datetime
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
 
 # ✅ 하이픈(-) 포함된 경로도 임포트 가능하게 처리
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 # config.py에서 설정 가져오기
-from config.config import HEADLESS, TIMEOUT, BROWSER_TYPE, BASE_URL
+from config.config import BASE_URL, TIMEOUT, get_driver
 
 @pytest.fixture(scope="session")
 def base_url():
@@ -22,22 +17,7 @@ def base_url():
 
 @pytest.fixture(scope="session")
 def driver(request):
-    if BROWSER_TYPE.lower() == "chrome":
-        chrome_options = Options()
-        if HEADLESS:
-            chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--window-size=1920,1080")
-        service = Service(ChromeDriverManager().install())
-        driver = webdriver.Chrome(service=service, options=chrome_options)
-    else:
-        service = Service(ChromeDriverManager().install())
-        driver = webdriver.Chrome(service=service)
-
-    driver.implicitly_wait(TIMEOUT)
-    driver.maximize_window()
+    driver = get_driver()
 
     def finalize():
         driver.quit()

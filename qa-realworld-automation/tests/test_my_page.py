@@ -20,11 +20,20 @@ from locators.home_locators import HomePageLocators as HomeLoc
 from utils.logger import setup_logger
 from config import config
 
-def loadTestData():
+def loadTestData(key):
     # 테스트 데이터 로드 함수
     dataFilePath = os.path.join(config.TEST_DATA_DIR, "test_data.json")
-    with open(dataFilePath, 'r', encoding='utf-8') as file:
-        return json.load(file)
+    with open(dataFilePath, encoding="utf-8") as f:
+        data = json.load(f)
+
+        # data는 리스트이고, 각 요소는 딕셔너리임 → 반복하며 key를 가진 딕셔너리를 찾는다
+        for item in data:
+            if key in item:
+                return item[key]
+
+        raise KeyError(f"'{key}' not found in test_data.json")
+
+    raise KeyError(f"'{key}' not found in test_data.json")
 
 logger = setup_logger(__name__)
 
@@ -36,7 +45,7 @@ class TestMyPage:
         # MYP-AUTO-001: 테스트 ID: unnamed
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["fullDataUser"]
+            testData = loadTestData("fullDataUser")
             
             # 로그인 진행
             loginPage = LoginPage(driver)
@@ -67,7 +76,7 @@ class TestMyPage:
         # MYP-AUTO-002: 프로필 페이지 UI 요소 확인 테스트
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["fullDataUser"]
+            testData = loadTestData("fullDataUser")
             
             # 로그인 및 프로필 페이지 접근
             loginPage = LoginPage(driver)
@@ -105,7 +114,7 @@ class TestMyPage:
         # MYP-AUTO-003: 프로필 페이지에서 설정 페이지 접근 테스트
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["fullDataUser"]
+            testData = loadTestData("fullDataUser")
             
             # 로그인 및 프로필 페이지 접근
             loginPage = LoginPage(driver)
@@ -138,7 +147,7 @@ class TestMyPage:
         # MYP-AUTO-004: 프로필 페이지 'My Articles' 탭 기본 선택 확인 테스트
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["fullDataUser"]
+            testData = loadTestData("fullDataUser")
             
             # 로그인 및 프로필 페이지 접근
             loginPage = LoginPage(driver)
@@ -171,7 +180,7 @@ class TestMyPage:
         # MYP-AUTO-005: 프로필 페이지 'Favorited Articles' 탭 전환 테스트
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["fullDataUser"]
+            testData = loadTestData("fullDataUser")
             
             # 로그인 및 프로필 페이지 접근
             loginPage = LoginPage(driver)
@@ -208,7 +217,7 @@ class TestMyPage:
         # MYP-AUTO-006: 사용자가 작성한 게시글이 없을 때 'My Articles' 탭 확인
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["fullDataUser"]
+            testData = loadTestData("fullDataUser")
             
             # 로그인 진행
             loginPage = LoginPage(driver)
@@ -236,7 +245,7 @@ class TestMyPage:
         # MYP-AUTO-007: 사용자가 좋아요를 누른 게시글이 없을 때 'Favorited Articles' 탭 확인
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["fullDataUser"]
+            testData = loadTestData("fullDataUser")
             
             # 로그인 진행
             loginPage = LoginPage(driver)
@@ -264,7 +273,7 @@ class TestMyPage:
         # MYP-AUTO-008: 사용자가 작성한 게시글의 UI 요소 확인
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["profile_with_articles"]
+            testData = loadTestData("profile_with_articles")
             
             # 로그인 진행
             loginPage = LoginPage(driver)
@@ -307,7 +316,7 @@ class TestMyPage:
         # MYP-AUTO-009: 사용자가 좋아요를 누른 게시글의 UI 요소 확인
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["fullDataUser"]
+            testData = loadTestData("fullDataUser")
             
             # 로그인 진행
             loginPage = LoginPage(driver)
@@ -350,7 +359,7 @@ class TestMyPage:
         # MYP-AUTO-010: 긴 태그 이름이 있는 게시글의 레이아웃 확인
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["fullDataUser"]
+            testData = loadTestData("fullDataUser")
             
             # 로그인 진행
             loginPage = LoginPage(driver)
@@ -395,7 +404,7 @@ class TestMyPage:
         # MYP-AUTO-011: 긴 태그 표시 확인
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["fullDataUser"]
+            testData = loadTestData("fullDataUser")
             
             # 로그인 및 프로필 페이지 접근
             loginPage = LoginPage(driver)
@@ -442,7 +451,7 @@ class TestMyPage:
         # MYP-AUTO-012: 게시글의 상세 페이지로 이동 테스트
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["fullDataUser"]
+            testData = loadTestData("fullDataUser")
             
             # 로그인 및 프로필 페이지 접근
             loginPage = LoginPage(driver)
@@ -473,7 +482,7 @@ class TestMyPage:
         # MYP-AUTO-013: My Articles 탭 게시글 10개 이하
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["belowTenArticlesUser"]
+            testData = loadTestData("belowTenArticlesUser")
             
             # 로그인 및 프로필 페이지 접근
             loginPage = LoginPage(driver)
@@ -502,7 +511,7 @@ class TestMyPage:
         # MYP-AUTO-014: My Articles 탭에서 10개 초과 게시글이 있을 때 페이지네이션
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["fullDataUser"]
+            testData = loadTestData("fullDataUser")
             
             # 로그인 및 프로필 페이지 접근
             loginPage = LoginPage(driver)
@@ -547,7 +556,7 @@ class TestMyPage:
         # MYP-AUTO-015: My Articles 탭에서 좋아요 버튼 테스트
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["fullDataUser"]
+            testData = loadTestData("fullDataUser")
             
             # 로그인 및 프로필 페이지 접근
             loginPage = LoginPage(driver)
@@ -590,7 +599,7 @@ class TestMyPage:
         # MYP-AUTO-016: 좋아요 버튼 토글 해제 기능 테스트
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["fullDataUser"]
+            testData = loadTestData("fullDataUser")
             
             # 로그인 진행
             loginPage = LoginPage(driver)
@@ -632,7 +641,7 @@ class TestMyPage:
         # MYP-AUTO-017: 좋아요한 게시글이 Favorited Articles 탭에 표시되는지 테스트
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["belowTenArticlesUser"]
+            testData = loadTestData("belowTenArticlesUser")
             
             # 로그인 진행
             loginPage = LoginPage(driver)
@@ -673,7 +682,7 @@ class TestMyPage:
         # MYP-AUTO-018: 좋아요 해제한 게시글이 Favorited Articles 탭에서 제거되는지 테스트
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["belowTenArticlesUser"]
+            testData = loadTestData("belowTenArticlesUser")
             
             # 로그인 진행
             loginPage = LoginPage(driver)
@@ -725,7 +734,7 @@ class TestMyPage:
         # MYP-AUTO-019: 10개 이하의 좋아요한 게시글이 모두 표시되는지 테스트
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["belowTenArticlesUser"]
+            testData = loadTestData("belowTenArticlesUser")
             
             # 로그인 진행
             loginPage = LoginPage(driver)
@@ -757,7 +766,7 @@ class TestMyPage:
         # MYP-AUTO-020: 10개 초과의 좋아요한 게시글에 대한 페이지네이션 테스트
         try:
             # 테스트 데이터 로드
-            testData = loadTestData()["fullDataUser"]
+            testData = loadTestData("fullDataUser")
             
             # 로그인 진행
             loginPage = LoginPage(driver)
