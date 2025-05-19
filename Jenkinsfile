@@ -31,19 +31,19 @@ pipeline {
     }
   }
 
-  // stages {
-  //   stage('Install Dependencies') {
-  //     steps {
-  //       sh 'pip install -r qa-realworld-automation/requirements.txt'
-  //     }
-  //   }
+  stages {
+    stage('Install Dependencies') {
+      steps {
+        sh 'pip install -r qa-realworld-automation/requirements.txt'
+      }
+    }
 
-  //   stage('Run Tests') {
-  //     steps {
-  //       sh 'pytest qa-realworld-automation/tests --maxfail=1 --disable-warnings -v'
-  //     }
-  //   }
-  // }
+    stage('Run Tests') {
+      steps {
+        sh 'pytest qa-realworld-automation/tests --maxfail=1 --disable-warnings -v'
+      }
+    }
+  }
 
   post {
     always {
@@ -57,3 +57,4 @@ pipeline {
     }
   }
 }
+
