@@ -4,11 +4,11 @@ from testcases_and_locators_run import run as generate_locators_and_testcases
 from tests_run import main as generate_test_files
 
 if __name__ == "__main__":
-    print("\n=== [1] 페이지 객체 생성 시작 ===")
-    generate_page_objects()
-
-    print("\n=== [2] 로케이터 및 테스트케이스 생성 시작 ===")
+    print("\n=== [1] 로케이터 및 테스트케이스 생성 시작 ===")
     generate_locators_and_testcases()
+
+    print("\n=== [2] 페이지 객체 생성 시작 ===")
+    generate_page_objects()
 
     print("\n=== [3] 테스트 파일 생성 시작 ===")
     generate_test_files()
