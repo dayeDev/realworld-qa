@@ -9,7 +9,7 @@
 - 윤찬유
 
 ## 📌 프로젝트 개요
-본 프로젝트는 [RealWorld](https://github.com/gothinkster/realworld) 애플리케이션을 대상으로 API 테스트 자동화를 수행한 실습 프로젝트입니다.  
+본 프로젝트는 [RealWorld](https://github.com/gothinkster/realworld) 애플리케이션을 대상으로 테스트 자동화를 수행한 실습 프로젝트입니다.  
 RealWorld는 다양한 프론트엔드 및 백엔드 기술 스택으로 동일한 기능을 구현한 [Medium.com](https://medium.com) 클론 예제입니다.  
 단순한 Todo 앱 데모를 넘어서, 실제 서비스 수준의 기능을 갖춘 웹 애플리케이션을 테스트하는 데 목적이 있습니다.
 
